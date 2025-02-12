@@ -1,20 +1,16 @@
-const express = require('express');
 const axios = require('axios');
-const app = express();
-const port = 3000;
 
-app.use(express.json());
+exports.name = '/hoyolab';
+exports.index = async (req, res, next) => {
 
-app.get('/hoyolab', async (req, res) => {
-  let url = req.query.url;
-  
+const link = req.query.link;
 
-  if (!url) {
-    return res.status(400).json({ error: 'URL is required' });
-  }
-  
+        // Check if link is missing or invalid
+        if (!link) {
+          return res.status(400).send('Missing link parameter');
+        }
 
-  url = url.split('?')[0];
+    url = url.split('?')[0];
   
   const postIdMatch = url.match(/(\d+)$/);
   if (!postIdMatch) {
@@ -32,7 +28,7 @@ app.get('/hoyolab', async (req, res) => {
       },
       headers: {
         'authority': 'bbs-api-os.hoyolab.com',
-        'accept': 'application/json, text/plain, */*',
+        'accept': 'application/json, text/plain, /',
         'accept-language': 'vi-VN,vi;q=0.9,fr-FR;q=0.8,fr;q=0.7,en-US;q=0.6,en;q=0.5',
         'cookie': 'mi18nLang=vi-vn; _HYVUUID=f3ba57f5-11db-4f57-ab4d-8ed8fa2bad99; DEVICEFP_SEED_ID=1af0e19fd69220d7; DEVICEFP_SEED_TIME=1739283544181; _MHYUUID=4a1da4ea-2052-42ca-bcab-256ffe2f8e2a; DEVICEFP=38d7f4b1ab73c; _gid=GA1.2.2056634375.1739283547; HYV_LOGIN_PLATFORM_OPTIONAL_AGREEMENT={%22content%22:[]}; HYV_LOGIN_PLATFORM_LOAD_TIMEOUT={}; HYV_LOGIN_PLATFORM_TRACKING_MAP={}; HYV_LOGIN_PLATFORM_LIFECYCLE_ID={%22value%22:%22491c49ea-bb67-43d5-856e-e8775085c211%22}; _gat_gtag_UA_206868027_1=1; _ga=GA1.1.460370863.1739283547; _ga_CYB6ETZXPE=GS1.1.1739283546.1.1.1739285392.0.0.0; _ga_Z2CH03T4VN=GS1.1.1739283547.1.1.1739285392.0.0.0',
         'origin': 'https://m.hoyolab.com',
@@ -68,15 +64,8 @@ app.get('/hoyolab', async (req, res) => {
     const imageUrlList = content.imgs;
     const title = content.describe;
     res.json({ subject: subject , post_id: post_id , uid: uid , title: title , view_num: view_num , reply_num: reply_num , like_num: like_num , bookmark_num: bookmark_num , share_num: share_num , imageUrls: imageUrlList });
-    
   } catch (error) {
-    
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch post data' });
+    console.error('Error fetching data:', error);
+    res.status(500).send('Error fetching data');
   }
-});
-
-// Start the server
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
+};
