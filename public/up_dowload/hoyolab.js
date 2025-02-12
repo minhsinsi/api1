@@ -3,10 +3,10 @@ const axios = require('axios');
 exports.name = '/hoyolab';
 exports.index = async (req, res, next) => {
 
-const link = req.query.link;
+const url = req.query.url;
 
         // Check if link is missing or invalid
-        if (!link) {
+        if (!url) {
           return res.status(400).send('Missing link parameter');
         }
 
